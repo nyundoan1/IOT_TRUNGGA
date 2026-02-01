@@ -1,0 +1,65 @@
+01. TRẠNG THÁI BAN ĐẦU
+    ├── Hệ thống khởi tạo (Firebase, ESP32, DS18B20, Relay)
+    └── Chờ người dùng nhập cấu hình
+
+02. NHẬP SỐ GIAI ĐOẠN
+    ├── Người dùng nhập số stage cần ấp (vd: 2 giai đoạn) rồi nhấn "OK"
+    └── Lúc này, số stage sẽ lưu vào Firebase / ESP32 rồi xuất hiện 2 ô Giai Đoạn tương ứng
+
+03. NHẬP THỜI GIAN VÀ NHIỆT ĐỘ TƯƠNG ỨNG
+    ├── Người dùng nhập:
+    │   ├── Nhiệt độ mong muốn cho từng giai đoạn
+    │   └── Thời gian gồm: ngày – giờ – phút (theo từng stage)
+    ├── Web tự động chuyển đổi thời gian này thành tổng số giây (time)
+    │   → Ví dụ: 0 ngày 8 giờ 24 phút = 30240 giây
+    ├── Dữ liệu được gửi lên Firebase trong nhánh /SETUP/STAGES
+    │   ├── Stage 0
+    │   │   ├── temp : 37
+    │   │   └── time : 30240
+    │   └── Stage 1
+    │       ├── temp : 36
+    │       └── time : 25920
+    └── ESP32 đọc giá trị này từ Firebase để tính thời điểm bắt đầu và kết thúc từng giai đoạn
+
+
+04. CHỜ GIAI ĐOẠN 1 ĐẠT NHIỆT ĐỘ MONG MUỐN
+    ├── STATUS = "pending"
+    ├── ESP32 đọc TEMP_THUCTE từ DS18B20
+    ├── Nếu TEMP_THUCTE < TEMP_MONGMUON → bật relay (gia nhiệt)
+    ├── Nếu TEMP_THUCTE ≥ TEMP_MONGMUON → chuyển sang running
+    └── Cập nhật thời gian kết thúc giai đoạn 1 (STAGE_END_TIME)
+
+05. GIAI ĐOẠN 1 RUNNING
+    ├── STATUS = "running"
+    ├── Cập nhật kết thúc giai đoạn 1
+    ├── Theo dõi nhiệt độ và relay tự động bật/tắt
+    └── Sau khi hết thời gian → sang bước 07
+
+06. CẬP NHẬT LOG MỖI 30 GIÂY
+    ├── ESP32 gửi log lên Firebase:
+    │   ├── TEMP_THUCTE
+    │   ├── TEMP_MONGMUON
+    │   ├── CURRENT_STAGE
+    │   └── thời gian cụ thể
+    └── Dữ liệu hiển thị trên biểu đồ web
+
+07. SAU KHI XONG GIAI ĐOẠN 1
+    ├── Cập nhật STATUS = "pending" của giai đoạn 2
+    ├── CURRENT_STAGE = 1 → 2
+    └── Ghi lại thời gian chuyển tiếp vào log
+
+08. GIAI ĐOẠN 2 RUNNING
+    ├── Khi stage 2 bắt đầu → STATUS = "running"
+    ├── Cập nhật thời gian kết thúc giai đoạn 2
+    ├── Theo dõi nhiệt độ tương tự giai đoạn 1
+    └── Khi đủ thời gian → sang bước 09
+
+09. KHI HẾT GIAI ĐOẠN 2
+    ├── Cập nhật STATUS = "done"
+    ├── Relay tắt (RELAY_STATE = 0)
+    ├── Log vẫn tiếp tục được ghi
+    └── Chu kỳ ấp hoàn tất
+
+10. BIỂU ĐỒ WEB CẬP NHẬT
+    └── Biểu đồ hiển thị dữ liệu theo các mốc được chọn (mốc 1 phút đang được chọn)
+     

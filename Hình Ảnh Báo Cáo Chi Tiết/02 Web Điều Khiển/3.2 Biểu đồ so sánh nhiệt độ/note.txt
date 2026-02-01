@@ -1,0 +1,47 @@
+BIỂU ĐỒ GIÁM SÁT NHIỆT ĐỘ (REALTIME TEMPERATURE CHART)
+│
+├──  Mục đích:
+│     Hiển thị sự thay đổi của nhiệt độ thực tế (TEMP_THUCTE) theo thời gian,
+│     giúp người dùng giám sát quá trình ấp trứng trực quan và dễ theo dõi.
+│
+├──  Nút "Reset Chart"
+│     ├── Vị trí: nằm phía dưới biểu đồ.
+│     └── Chức năng:
+│           • Xóa toàn bộ dữ liệu đang hiển thị trên biểu đồ (tránh tràn bộ nhớ).
+│           • Giữ nguyên tiến trình ghi dữ liệu (Firebase vẫn cập nhật bình thường).
+│           • Giúp người dùng xem lại đồ thị từ đầu hoặc khi chuyển stage mới.
+│
+├──  Thanh chọn mốc thời gian hiển thị
+│     ├── Vị trí: góc phải hoặc trên biểu đồ.
+│     ├── Các tùy chọn thường có:
+│     │     • 1 phút  (1p)
+│     │     • 5 phút  (5p)
+│     │     • 10 phút (10p)
+│     │     • 30 phút (30p)
+│     │     • 1 giờ   (1h)
+│     │     • 2 giờ   (2h)
+│     │     • 5 giờ   (5h)
+│     │     • 1 ngày  (1d)
+│     │     • 2 ngày  (2d)
+│     └── Chức năng:
+│           • Giúp người dùng lọc khoảng thời gian hiển thị dữ liệu trên trục X.
+│           • Dữ liệu cũ hơn giới hạn mốc sẽ bị ẩn (không xóa).
+│           • Tự động cập nhật trục X để phù hợp với khung thời gian chọn.
+│
+├──  Dữ liệu biểu đồ
+│     ├── TEMP_THUCTE  ←  từ nhánh /DS18B20/TEMP_THUCTE
+│     ├── TEMP_MONGMUON ←  từ nhánh /DS18B20/TEMP_MONGMUON
+│     └── Các đường thể hiện:
+│           • Đường màu đỏ: Nhiệt độ thực tế
+│           • Đường màu xanh: Nhiệt độ mong muốn
+│
+└──  Hoạt động tổng thể:
+      ├── 1.  ESP32 gửi dữ liệu nhiệt độ lên Firebase mỗi 30s.
+      ├── 2.  Web đọc dữ liệu từ Firebase (qua API Realtime hoặc onValue listener).
+      ├── 3.  Biểu đồ cập nhật tự động (append point mới).
+      ├── 4.  Người dùng có thể:
+      │     • Reset lại đồ thị.
+      │     • Zoom / pan để xem chi tiết.
+      │     • Chọn mốc thời gian hiển thị.
+      └── 5. Toàn bộ thao tác lên biểu đồ đều chỉ ảnh hưởng đến giao diện hiển thị,
+              không tác động đến tiến trình ấp trứng thực tế.

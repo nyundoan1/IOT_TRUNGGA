@@ -1,0 +1,47 @@
+THIẾT LẬP SỐ GIAI ĐOẠN
+│
+├──  Ô "Số giai đoạn (1–10)"
+│     ├── Người dùng nhập số lượng giai đoạn cần thiết cho quá trình ấp trứng.
+│     ├── Hệ thống hỗ trợ tối đa 10 stage.
+│     ├── Sau khi nhập → nhấn “OK” để hiển thị tương ứng số ô nhập phía dưới.
+│     ├── Ví dụ: nhập “5” → giao diện sẽ hiện 5 dòng để thiết lập từng giai đoạn.
+│     └── Dữ liệu này không gửi ngay lên Firebase mà dùng để hiển thị form nhập.
+│
+├──  Bảng nhập thông tin từng giai đoạn
+│     ├── Mỗi dòng tương ứng với một stage (1 → n).
+│     ├── Mỗi dòng gồm các ô nhập:
+│     │     • Nhiệt độ mong muốn (°C)
+│     │     • Số ngày duy trì
+│     │     • Số giờ duy trì
+│     │     • Số phút duy trì
+│     ├── Ví dụ:
+│     │     Giai đoạn 1 → 33°C, 1 ngày, 0 giờ, 0 phút
+│     │     Giai đoạn 2 → 31°C, 0 ngày, 3 giờ, 0 phút
+│     │     ...
+│     └── Người dùng nhập thủ công các giá trị này trước khi lưu.
+│
+├──  Nút “Lưu thiết lập”
+│     ├── Khi nhấn, hệ thống sẽ:
+│     │     1. Đọc toàn bộ dữ liệu người dùng đã nhập.
+│     │     2.  Chuyển đổi thời gian (ngày–giờ–phút) thành **tổng số giây**.
+│     │     3.  Gửi toàn bộ cấu hình lên Firebase tại nhánh:
+│     │         /SETUP/STAGES
+│     │         ├── 0
+│     │         │   ├── temp : 33
+│     │         │   └── time : 86400   ← (1 ngày = 86400 giây)
+│     │         ├── 1
+│     │         │   ├── temp : 31
+│     │         │   └── time : 10800   ← (3 giờ = 10800 giây)
+│     │         └── ...
+│     ├── Đồng thời hệ thống sẽ ghi lại thời gian setup hiện tại:
+│     │     /LOGS/.../SETUP_TIME = currentTime
+│     └── Sau khi lưu thành công → hiển thị thông báo:
+│         “ Đã lưu thiết lập và thời gian bắt đầu stage!”
+│
+└──  Vai trò của ESP32
+      ├── ESP32 đọc dữ liệu từ nhánh /SETUP/STAGES
+      ├── Tự động tính:
+      │     • Thời gian bắt đầu từng stage (STAGE_START_TIME)
+      │     • Thời gian kết thúc từng stage (STAGE_END_TIME)
+      ├── Cập nhật stage hiện tại khi hết hạn thời gian.
+      └── Dựa trên nhiệt độ thực tế để điều khiển relay và trạng thái "pending"/"running".

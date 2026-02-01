@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Incubator Multi-stage Control</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
+
+  <script type="module" src="current_status.js"></script>
+  <script type="module" src="initial.js"></script>
+  <script type="module" src="chart.js"></script>
+  <script type="module" src="log.js"></script>
+
+  <!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+
+
+
+  <style>
+    .time-controls {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .time-controls label {
+      font-weight: bold;
+    }
+    .time-controls select {
+      padding: 5px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+
+
+<div class="main-wrapper">
+
+  <div class="container">
+    <div class="current-status" style="margin-top:24px; margin-bottom:24px; background:#e4f7ce; border-radius:8px; padding:16px;">
+      <h3 style="margin-top:0;">Trạng thái hiện tại</h3>
+      <div><b>Giai đoạn:</b> <span id="current-stage">--</span></div>
+      <div><b>Trạng thái:</b> <span id="system-status">--</span></div>
+      <div><b>Nhiệt độ mong muốn:</b> <span id="target-temp">--</span></div>
+      <div><b>Nhiệt độ thực tế:</b> <span id="temp-value">--</span></div>
+      <div><b>Trạng thái relay:</b> <span id="relay-state">--</span></div>
+      <div><b>Thời gian setup:</b> <span id="setup-time">--</span></div>
+      <div><b>Thời gian kết thúc giai đoạn hiện tại:</b> <span id="stage-end-time">--</span></div>
+      <div>
+        <span><b>Thời gian thực:</b> </span>
+        <span id="current-time" style="font-weight:bold; color:#d32f2f;">--</span>
+      </div>
+          <div id="setup-panel" class="setup-panel" style="margin-top:16px;">
+            <button id="toggle-setup-btn" class="toggle-btn">Hiển thị Setup Hiện Tại</button>
+            <div id="setup-content" class="setup-content"></div>
+          </div>
+      <div id="current-status-message" style="color:rgb(128, 87, 0); font-weight:bold; margin-top:8px;"></div>
+    </div>
+
+
+
+
+
+
+    <div class="setup-group" style="margin-top:32px;">
+      <h3>Thiết lập số lượng giai đoạn</h3>
+      <label for="numStages">Số giai đoạn (1-10): </label>
+      <input type="number" id="numStages" min="1" max="10" value="3">
+      <button id="setStagesBtn">OK</button>
+
+
+      <p style="color:#000000; margin-bottom:12px;">
+        <b>Hướng dẫn:</b> Nhập nhiệt độ mong muốn và thời gian duy trì cho từng giai đoạn. <br>
+        <i>Ví dụ: Giai đoạn 1: 37°C trong 1 ngày 2 giờ 30 phút.</i>
+      </p>
+      <form id="stage-form">
+        <div style="margin-bottom:10px;">
+          <strong>Giai đoạn 1:</strong>
+          <input type="number" id="temp1" placeholder="Nhiệt độ (°C)" required title="Nhiệt độ cần giữ">
+          <input type="number" id="day1" placeholder="Ngày" min="0" value="0" required title="Số ngày">
+          <input type="number" id="hour1" placeholder="Giờ" min="0" max="23" value="0" required title="Số giờ">
+          <input type="number" id="minute1" placeholder="Phút" min="0" max="59" value="0" required title="Số phút">
+        </div>
+        <div style="margin-bottom:10px;">
+          <strong>Giai đoạn 2:</strong>
+          <input type="number" id="temp2" placeholder="Nhiệt độ (°C)" required title="Nhiệt độ cần giữ">
+          <input type="number" id="day2" placeholder="Ngày" min="0" value="0" required title="Số ngày">
+          <input type="number" id="hour2" placeholder="Giờ" min="0" max="23" value="0" required title="Số giờ">
+          <input type="number" id="minute2" placeholder="Phút" min="0" max="59" value="0" required title="Số phút">
+        </div>
+        <div style="margin-bottom:10px;">
+          <strong>Giai đoạn 3:</strong>
+          <input type="number" id="temp3" placeholder="Nhiệt độ (°C)" required title="Nhiệt độ cần giữ">
+          <input type="number" id="day3" placeholder="Ngày" min="0" value="0" required title="Số ngày">
+          <input type="number" id="hour3" placeholder="Giờ" min="0" max="23" value="0" required title="Số giờ">
+          <input type="number" id="minute3" placeholder="Phút" min="0" max="59" value="0" required title="Số phút">
+        </div>
+        <button type="submit" class="set-temp-btn" style="margin-top:16px;">Lưu thiết lập</button>
+      </form>
+      <div id="setup-status" style="margin-top:12px; color:green;"></div>
+    </div>
+
+
+  </div>
+
+  <div class="container">
+    <div class="chart-section">
+      <h3> Biểu đồ Nhiệt độ Thực tế và Nhiệt độ Mong muốn</h3>
+        <div class="chart-wrapper">
+        <canvas id="tempChart"></canvas>
+        </div>
+      <button id="resetChartBtn" class="reset-chart-btn" style="margin-top: 16px;"> Reset Chart</button>
+    </div>
+    
+    <div class="relative inline-block w-48 text-left mb-4">
+      <button id="dropdownBtn" class="inline-flex justify-between w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+        Chọn mốc thời gian
+        <svg class="ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      <div id="dropdownList" class="absolute mt-1 w-full rounded-md bg-white shadow-lg hidden z-50">
+        <!-- Items sẽ tạo bằng JS -->
+      </div>
+    </div>
+  </div> 
+
+
+
+  <button id="toggle-log-btn" class="toggle-log-btn"> Xem / Ẩn nhật ký</button>
+  <div id="log-panel" class="log-panel">
+    <div class="log-container">
+      <h3> Nhật ký hoạt động</h3>
+      <div id="logDisplay"></div>
+    </div>
+  </div>
+
+
+</div>
+ 
+
+
+
+</body>
+</html>
+
+
+<script>
+  const toggleBtn = document.getElementById("toggle-log-btn");
+  const logPanel = document.getElementById("log-panel");
+
+  toggleBtn.addEventListener("click", () => {
+    logPanel.classList.toggle("open");
+  });
+</script>

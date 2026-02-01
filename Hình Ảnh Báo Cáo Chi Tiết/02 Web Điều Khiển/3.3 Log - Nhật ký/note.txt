@@ -1,0 +1,30 @@
+ Nhật ký hoạt động
+     ├──  Nút "Xem / Ẩn nhật ký"
+     │     ├─ Chức năng: Ẩn hoặc hiển thị toàn bộ vùng nhật ký.
+     │     └─ Khi ẩn: giúp giảm tải thông tin, dễ theo dõi biểu đồ.
+     │
+     └──  Danh sách bản ghi log (theo thời gian)
+           ├─ Cấu trúc mỗi bản ghi:
+           │    ├──  **Thời gian ghi:** hiển thị theo định dạng [HH:MM:SS]
+           │    ├──  **Giai đoạn:** cho biết hệ thống đang ở stage nào (ví dụ: “2” hoặc “no” nếu chưa kích hoạt)
+           │    ├──  **Nhiệt độ thực tế:** giá trị đo từ cảm biến DS18B20 (ví dụ: 36.25°C)
+           │    └──  **Nhiệt độ mong muốn:** giá trị mục tiêu cài đặt trong Firebase (ví dụ: 38.00°C)
+           │
+           ├─  Khi nhấn vào bản ghi:
+           │    ├── Mở rộng chi tiết log gồm 4 dòng:
+           │    │     • Thời gian ghi  
+           │    │     • Giai đoạn hiện tại  
+           │    │     • Nhiệt độ thực tế  
+           │    │     • Nhiệt độ mong muốn
+           │    └── Đóng lại để gọn nếu chỉ cần xem nhanh dòng tóm tắt.
+           │
+           ├─  Ý nghĩa sử dụng:
+           │    • Giúp theo dõi biến động nhiệt độ theo thời gian.  
+           │    • Dễ dàng kiểm tra hệ thống có duy trì ổn định theo từng giai đoạn hay không.  
+           │    • Hỗ trợ đối chiếu khi vẽ biểu đồ nhiệt độ.
+           │
+           └──  Cập nhật liên tục
+                • Log mới được thêm tự động sau mỗi lần hệ thống gửi dữ liệu lên Firebase.
+
+      
+     

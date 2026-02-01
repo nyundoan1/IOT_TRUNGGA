@@ -1,0 +1,62 @@
+THANH TRẠNG THÁI HIỆN TẠI
+│
+├──  GIAI ĐOẠN HIỆN TẠI
+│     ├── Hiển thị stage mà hệ thống đang chạy (bắt đầu từ 1).
+│     ├── ESP32 ghi lên Firebase mỗi khi chuyển stage.
+│     └── Nhánh dữ liệu: /DS18B20/CURRENT_STAGE
+│        → Ví dụ: "1" → Hệ thống đang ở giai đoạn 1.
+│
+├──  TRẠNG THÁI HOẠT ĐỘNG
+│     ├── Biểu thị tình trạng của stage hiện tại.
+│     ├── Dữ liệu lấy từ: /DS18B20/STATUS
+│     ├── Các trạng thái:
+│     │     • "pending" → Đang chờ đạt nhiệt độ mong muốn.
+│     │     • "running" → Đang chạy (relay điều khiển theo hysteresis).
+│     │     • "done" → Đã hoàn thành toàn bộ các giai đoạn.
+│     └── Ví dụ: "pending" → Hệ thống chưa đủ nhiệt độ để bắt đầu stage.
+│
+├──  NHIỆT ĐỘ MONG MUỐN
+│     ├── Là giá trị nhiệt độ mục tiêu mà người dùng cài đặt.
+│     ├── Lấy từ Firebase: /DS18B20/TEMP_MONGMUON
+│     ├── Cơ chế điều khiển:
+│     │     • Bật relay khi Temp_thucte < Temp_mongmuon.
+│     │     • Tắt relay khi Temp_thucte ≥ Temp_mongmuon + HYSTERESIS.
+│     └── Ví dụ: 33°C → ESP32 cố gắng giữ nhiệt độ quanh 33°C.
+│
+├──  NHIỆT ĐỘ THỰC TẾ
+│     ├── Là giá trị đọc được từ cảm biến DS18B20.
+│     ├── Gửi lên Firebase tại: /DS18B20/TEMP_THUCTE
+│     ├── Cập nhật liên tục (mỗi ~30 giây).
+│     └── Ví dụ: 38.5°C → Cảm biến báo cao hơn nhiệt độ mong muốn.
+│        → Dùng để quyết định relay bật/tắt và cập nhật trạng thái stage.
+│
+├──  TRẠNG THÁI RELAY
+│     ├── Hiển thị trạng thái hoạt động của đèn sưởi (relay).
+│     ├── Dữ liệu tại: /LAMP/RELAY_STATE
+│     ├── 1 → BẬT (đang gia nhiệt)
+│     ├── 0 → TẮT (ngừng gia nhiệt)
+│     └── Ví dụ: “BẬT” → Relay đang hoạt động để tăng nhiệt độ.
+│
+├──  THỜI GIAN SETUP STAGE
+│     ├── Là thời điểm bắt đầu giai đoạn hiện tại.
+│     ├── ESP32 ghi lên Firebase khi chuyển stage.
+│     └── Nhánh dữ liệu: /LOGS/.../SETUP_TIME
+│        → Ví dụ: 27/10/2025 00:01:30 → Stage bắt đầu lúc nửa đêm.
+│
+├──  THỜI GIAN KẾT THÚC STAGE
+│     ├── Được tính tự động:
+│     │     STAGE_END_TIME = STAGE_START_TIME + DURATION(stage)
+│     ├── ESP32 so sánh với currentTime để xác định khi kết thúc.
+│     ├── Khi currentTime ≥ stageEndTime → chuyển sang stage tiếp theo.
+│     └── Ví dụ: 26/10/2025 18:37:44 → Hết giai đoạn 1, sang stage 2.
+│
+├──  THỜI GIAN THỰC
+│     ├── Là thời gian hiện tại (đồng bộ theo server Firebase).
+│     ├── ESP32 đọc /CURRENT_TIME để tính toán logic thời gian.
+│     └── Ví dụ: 27/10/2025 00:01:44 → Dùng để so sánh với stageEndTime.
+│
+└──  BẢNG HIỂN THỊ SETUP HIỆN TẠI
+      ├── Là bảng tổng hợp các stage đã cấu hình (nhiệt độ + thời gian).
+      ├── Hiển thị từ nhánh: /SETUP/STAGES
+      ├── Mỗi dòng gồm: "Stage X: [Temp đặt] – [Ngày/giờ/phút]"
+      └── Giúp người dùng dễ theo dõi tiến trình ấp trứng.

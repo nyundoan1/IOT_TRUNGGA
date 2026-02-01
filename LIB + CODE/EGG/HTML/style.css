@@ -1,0 +1,271 @@
+body {
+  background: #f7f9fb;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+
+
+/* --- KHỐI FLEX CHÍNH --- */
+.main-wrapper {
+  display: flex;
+  flex-wrap: nowrap;         /* 🔥 Không cho xuống dòng */
+  justify-content: center;   /* Căn giữa hai khối */
+  align-items: flex-start;   /* Căn đỉnh */
+  gap: 32px;                 /* Khoảng cách giữa hai khối */
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+/* --- CONTAINER CHÍNH BÊN TRÁI --- */
+.container {
+  flex: 1.2;
+  max-width: 700px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  padding: 32px 24px;
+  /* ❌ XÓA margin: 40px auto; vì nó phá layout flex */
+}
+
+h2 {
+  text-align: center;
+  color: #2d3a4a;
+  margin-bottom: 32px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.controls label {
+  font-weight: 500;
+  color: #2d3a4a;
+}
+
+input[type="number"] {
+  width: 80px;
+  padding: 6px 10px;
+  border: 1px solid #cfd8dc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+button {
+  padding: 7px 18px;
+  border: none;
+  border-radius: 6px;
+  background: #b0f7a9;
+  color: #130404;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: #0de660;
+}
+
+.reset-chart-btn {
+  padding: 7px 18px;
+  border: none;
+  border-radius: 6px;
+  background: oklab(89.924% -0.0861 0.04061 / 0.815);
+  color: #020202;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.reset-chart-btn:hover {
+  background: #00fb4b;
+}
+
+
+/* --- LOG BÊN PHẢI --- */
+.log-container {
+  flex: 0.8;
+  max-width: 600px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  padding: 24px 20px;
+  height: fit-content;
+  overflow-y: auto;
+}
+
+#logDisplay {
+  background: #f1f8e9;
+  border-radius: 8px;
+  padding: 10px;
+  font-family: monospace;
+  color: #2e7d32;
+  max-height: 500px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+/* --- Nút relay & canvas --- */
+.relay-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.relay-btn.on {
+  background: #43a047;
+}
+
+.relay-btn.on:hover {
+  background: #388e3c;
+}
+
+.relay-btn.off {
+  background: #e53935;
+}
+
+.relay-btn.off:hover {
+  background: #b71c1c;
+}
+
+canvas {
+  display: block;
+  margin: 0 auto;
+  background: #f1f8e9;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(33,150,243,0.07);
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 900px) {
+  .main-wrapper {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+
+
+/* --- BIỂU ĐỒ NHIỆT ĐỘ --- */
+.chart-container {
+  flex: 1;
+  max-width: 700px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  height: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+.chart-wrapper {
+  width: 100%;
+  max-width: 100%;      /* đảm bảo không vượt container */
+  overflow-x: auto;     /* nếu chart dài, sẽ xuất hiện scroll ngang */
+  padding-bottom: 8px;  /* khoảng cách dưới */
+}
+
+#tempChart {
+  width: 100%;
+  min-width: 600px;    /* nếu muốn chart không quá bé khi co nhỏ */
+  height: 400px;       /* chiều cao cố định */
+  display: block;
+  background: #f1f8e9;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(33,150,243,0.07);
+}
+
+
+/* ===== Nút đóng/mở nhật ký ===== */
+.toggle-log-btn {
+  position: fixed;
+  right: 20px;
+  top: 20px;
+  background: #18ce82;
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: background 0.3s;
+}
+.toggle-log-btn:hover {
+  background: #10fc24;
+}
+
+/* ===== Panel log trượt ===== */
+.log-panel {
+  position: fixed;
+  right: -920px;  /* Ẩn ra ngoài khung ban đầu */
+  top: 0;
+  width: 600px;
+  height: 100%;
+  background: #ffffff;
+  box-shadow: -4px 0 12px rgba(0,0,0,0.15);
+  transition: right 0.4s ease;
+  z-index: 999;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+/* Khi mở thì trượt vào */
+.log-panel.open {
+  right: 0;
+}
+
+.log-container h3 {
+  margin-top: 0;
+  color: #2d3a4a;
+}
+
+#logDisplay {
+  background: #f1f8e9;
+  border-radius: 8px;
+  padding: 10px;
+  font-family: monospace;
+  color: #2e7d32;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+.setup-panel {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.toggle-btn {
+  width: 100%;
+  padding: 8px 12px;
+  background-color: #f0f0f0;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: left;
+}
+
+.setup-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  background: #fff;
+  padding: 0 12px;
+}
+
+.setup-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}

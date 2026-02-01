@@ -1,0 +1,54 @@
+{
+  "DS18B20": {
+    "CURRENT_STAGE": 0,
+    "STATUS": "pending",
+    "TEMP_MONGMUON": 38,
+    "TEMP_THUCTE": 38.5
+  },
+  "LAMP": {
+    "RELAY_STATE": 1
+  },
+  "LOGS": {
+    "-ObnCXsq6EDAS18TUbfl": {
+      "CURRENT_STAGE": 0,
+      "RELAY_STATE": 0,
+      "SETUP_TIME": "18/10/2025 00:20:38",
+      "STATUS": "running",
+      "TEMP_MONGMUON": 33,
+      "TEMP_THUCTE": 32.8125,
+      "timestamp": "18/10/2025 00:28:12"
+    }
+  },
+  "SETUP": {
+    "STAGES": [
+      {
+        "temp": 38,
+        "time": 0
+      }
+    ],
+    "STAGE_END_TIME": {
+      "day": 26,
+      "hour": 18,
+      "minute": 37,
+      "month": 10,
+      "second": 44,
+      "year": 2025
+    },
+    "STAGE_START_TIME": {
+      "day": 26,
+      "hour": 21,
+      "minute": 46,
+      "month": 10,
+      "second": 55,
+      "year": 2025
+    },
+    "currentTime": {
+      "day": 26,
+      "hour": 23,
+      "minute": 41,
+      "month": 10,
+      "second": 32,
+      "year": 2025
+    }
+  }
+}
